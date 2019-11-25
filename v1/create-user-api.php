@@ -1,7 +1,4 @@
 <?php
-
-ini_set("display_errors",1);
-
 //inlcude headers
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
@@ -28,20 +25,31 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
        $user_obj->email = $data->email;
        $user_obj->password = password_hash($data->password, PASSWORD_DEFAULT);
 
-       if($user_obj->create_user()){
+       $email_data = $user_obj->check_email();
 
-         http_response_code(200);
-         echo json_encode(array(
-           "status" => 1,
-           "message" => "User has been created"
-         ));
-       }else{
-
+       if(!empty($email_data)){
+         // some data we have - insert should not go
          http_response_code(500);
          echo json_encode(array(
            "status" => 0,
-           "message" => "Failed to save user"
+           "message" => "User already exists, try another email address"
          ));
+       }else{
+         if($user_obj->create_user()){
+
+           http_response_code(200);
+           echo json_encode(array(
+             "status" => 1,
+             "message" => "User has been created"
+           ));
+         }else{
+
+           http_response_code(500);
+           echo json_encode(array(
+             "status" => 0,
+             "message" => "Failed to save user"
+           ));
+         }
        }
     }else{
       http_response_code(500);
