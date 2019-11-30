@@ -92,6 +92,33 @@ class Users{
       return false;
 
   }
+
+  // used to list all projects
+  public function get_all_projects(){
+
+    $project_query = "SELECT * from ".$this->projects_tbl." ORDER BY id DESC";
+
+    $project_obj = $this->conn->prepare($project_query);
+
+    $project_obj->execute();
+
+    return $project_obj->get_result();
+
+  }
+
+  public function get_user_all_projects(){
+
+    $project_query = "SELECT * from ".$this->projects_tbl." WHERE user_id = ? ORDER BY id DESC";
+
+    $project_obj = $this->conn->prepare($project_query);
+
+    $project_obj->bind_param("i", $this->user_id);
+
+    $project_obj->execute();
+
+    return $project_obj->get_result();
+
+  }
 }
 
  ?>
